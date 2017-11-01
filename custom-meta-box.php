@@ -57,6 +57,14 @@ class custom_meta_box{
     //adds a new metabox on our single post edit screen
     public function add_ship_meta_field($post_type, $post) {
       add_meta_box(
+        'ship_meta_featured',
+        __( '베스트 선박', 'custom-quick-edit' ),
+        array($this, 'ship_meta_featured'),
+        'ship',
+        'normal',
+        'low'
+      );
+      add_meta_box(
         'ship_meta_information',
         __( '판매 선박 정보', 'custom-quick-edit' ),
         array($this, 'ship_meta_information'),
@@ -163,6 +171,18 @@ class custom_meta_box{
 
     }
 
+    // Ship Meta Featured
+    public function ship_meta_featured( $post ){
+      wp_nonce_field( 'ship_meta', 'ship_meta_field' );
+
+      $best_featured = get_post_meta( get_the_ID(), 'best_featured', true );
+      $best_featured_attr = !empty($best_featured) ? ' checked' : "";
+
+      $content = '';
+      $content = "베스트 선박으로 추가하려면 선택해주세요. <input type='checkbox' name='best_featured' {$best_featured_attr} value='best_featured' />";
+      echo $content;
+    }
+
     //saving meta info (used for both traditional and quick-edit saves)
     public function ship_meta_content_save($post_id){
 
@@ -185,6 +205,9 @@ class custom_meta_box{
           if ( !current_user_can( 'edit_post', $post_id ) )
           return;
         }
+
+        $best_featured = isset($_POST['best_featured']) ? sanitize_text_field($_POST['best_featured']) : "";
+        update_post_meta( $post_id, 'best_featured', $best_featured );
 
         foreach (self::$ship_information as $key => $value) {
           $$key = isset($_POST[$key]) ? sanitize_text_field($_POST[$key]) : "";
