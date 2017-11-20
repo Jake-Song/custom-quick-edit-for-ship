@@ -25,6 +25,7 @@ class custom_meta_box{
       'made_location' => '조선지',
       'commit_name' => '담당자이름',
       'commit_contact' => '연락처',
+      'price' => '매매가',
     );
 
     private static $ship_option_basic = array(
